@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>iverilog — File Selection Guide</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d1117;
+    --bg2: #161b22;
+    --bg3: #1c2128;
+    --border: #30363d;
+    --text: #c9d1d9;
+    --muted: #8b949e;
+    --blue: #58a6ff;
+    --green: #3fb950;
+    --orange: #d29922;
+    --red: #f85149;
+    --purple: #bc8cff;
+    --yellow: #e3b341;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    line-height: 1.7;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+  }
+
+  /* HERO */
+  .hero {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: var(--bg2);
+    padding: 36px;
+    margin-bottom: 48px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--blue), var(--green));
+  }
+  .hero-tag { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--green); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px; }
+  .hero h1 { font-size: 32px; font-weight: 700; color: #fff; margin-bottom: 8px; }
+  .hero h1 span { color: var(--blue); }
+  .hero p { color: var(--muted); font-size: 14px; }
+
+  /* SECTION */
+  section { margin-bottom: 56px; }
+  .section-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+  .section-num { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); border: 1px solid var(--border); padding: 2px 8px; border-radius: 4px; }
+  h2 { font-size: 19px; font-weight: 600; color: var(--blue); }
+  p { margin-bottom: 12px; color: var(--text); }
+
+  /* FILE BLOCKS */
+  .file-row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    margin: 16px 0;
+  }
+  .file-block {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+  .file-box {
+    width: 110px;
+    padding: 12px 8px;
+    border-radius: 8px;
+    border: 1.5px solid;
+    text-align: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.4;
+    position: relative;
+  }
+  .file-box.verilog   { background: #0d2117; border-color: var(--green); color: var(--green); }
+  .file-box.testbench { background: #0d1a2d; border-color: var(--blue);  color: var(--blue);  }
+  .file-box.unrelated { background: #1a1a0d; border-color: var(--orange); color: var(--orange); }
+  .file-box.compiled  { background: #1a0d0d; border-color: var(--red);   color: var(--red);   }
+  .file-box.top-selected {
+    box-shadow: 0 0 0 2px var(--blue), 0 0 16px rgba(88,166,255,0.25);
+  }
+  .file-label {
+    font-size: 11px;
+    color: var(--muted);
+    text-align: center;
+    font-family: 'JetBrains Mono', monospace;
+    max-width: 110px;
+  }
+  .file-label.tb  { color: var(--blue); }
+  .file-label.grn { color: var(--green); }
+  .file-label.org { color: var(--orange); }
+  .file-label.red { color: var(--red); }
+
+  /* FILTER ARROW */
+  .filter-step {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin: 20px 0;
+    flex-wrap: wrap;
+  }
+  .filter-arrow-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+  .filter-cmd {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 6px 14px;
+    color: var(--yellow);
+    white-space: nowrap;
+  }
+  .arrow-down {
+    font-size: 22px;
+    color: var(--muted);
+    line-height: 1;
+  }
+
+  /* BADGE */
+  .badge {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 20px;
+    border: 1px solid;
+  }
+  .badge.green  { color: var(--green);  border-color: var(--green);  background: #0d2117; }
+  .badge.blue   { color: var(--blue);   border-color: var(--blue);   background: #0d1a2d; }
+  .badge.orange { color: var(--orange); border-color: var(--orange); background: #1a1a0d; }
+  .badge.red    { color: var(--red);    border-color: var(--red);    background: #1a0d0d; }
+
+  /* CALLOUT */
+  .callout {
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin: 16px 0;
+    border-left: 3px solid;
+    background: var(--bg2);
+    font-size: 14px;
+  }
+  .callout.good  { border-color: var(--green); }
+  .callout.bad   { border-color: var(--red); }
+  .callout.info  { border-color: var(--blue); }
+  .callout.warn  { border-color: var(--orange); }
+  .callout-title { font-family: 'JetBrains Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 6px; }
+  .callout.good .callout-title { color: var(--green); }
+  .callout.bad  .callout-title { color: var(--red); }
+  .callout.info .callout-title { color: var(--blue); }
+  .callout.warn .callout-title { color: var(--orange); }
+
+  pre {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px 20px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    line-height: 1.7;
+    overflow-x: auto;
+    margin: 14px 0;
+  }
+
+  /* LEGEND */
+  .legend {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin: 16px 0;
+    padding: 14px 18px;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+  }
+  .legend-item { display: flex; align-items: center; gap: 8px; font-size: 13px; }
+  .legend-dot { width: 12px; height: 12px; border-radius: 3px; border: 1.5px solid; }
+  .legend-dot.v  { background: #0d2117; border-color: var(--green); }
+  .legend-dot.tb { background: #0d1a2d; border-color: var(--blue); }
+  .legend-dot.un { background: #1a1a0d; border-color: var(--orange); }
+  .legend-dot.co { background: #1a0d0d; border-color: var(--red); }
+
+  /* IGNORED overlay feel */
+  .file-box.ignored {
+    opacity: 0.3;
+    filter: grayscale(1);
+  }
+
+  .divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 48px 0;
+  }
+
+  /* quick ref table */
+  .ref-table { width: 100%; border-collapse: collapse; background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; margin: 16px 0; }
+  .ref-table th { padding: 10px 16px; text-align: left; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid var(--border); background: var(--bg3); }
+  .ref-table td { padding: 10px 16px; border-bottom: 1px solid #21262d; font-size: 13px; }
+  .ref-table tr:last-child td { border-bottom: none; }
+  .ref-table td:first-child { font-family: 'JetBrains Mono', monospace; color: var(--yellow); }
+
+  .footer { text-align: center; padding: 32px 0 0; border-top: 1px solid var(--border); color: var(--muted); font-size: 12px; font-family: 'JetBrains Mono', monospace; }
+
+  @media (max-width: 600px) {
+    .filter-step { flex-direction: column; align-items: flex-start; }
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-tag">// iverilog reference</div>
+  <h1>File Selection <span>& Top Module</span></h1>
+  <p>How iverilog decides which files to compile, which one to run, and how to take control when needed.</p>
+</div>
+
+<!-- LEGEND -->
+<div class="legend">
+  <div class="legend-item"><div class="legend-dot v"></div> Design file</div>
+  <div class="legend-item"><div class="legend-dot tb"></div> Test file (runner)</div>
+  <div class="legend-item"><div class="legend-dot un"></div> Unrelated file</div>
+  <div class="legend-item"><div class="legend-dot co"></div> Compiled output (not Verilog)</div>
+</div>
+
+<!-- S1: * vs *.v -->
+<section>
+  <div class="section-header">
+    <span class="section-num">01</span>
+    <h2>Why * Breaks and *.v Fixes It</h2>
+  </div>
+
+  <p>After you compile once, a file called <code>a.out</code> appears in the folder. The bare <code>*</code> wildcard grabs <em>everything</em> — including that compiled output. iverilog tries to read it as Verilog code and immediately crashes.</p>
+
+  <p>Using <code>*.v</code> limits the grab to only files ending in <code>.v</code>, so the compiled output is never touched.</p>
+
+  <!-- All files in folder -->
+  <p style="color: var(--muted); font-size: 13px; margin-bottom: 6px;">Files in the folder:</p>
+  <div class="file-row">
+    <div class="file-block">
+      <div class="file-box verilog">mux2to1.v</div>
+      <div class="file-label grn">design</div>
+    </div>
+    <div class="file-block">
+      <div class="file-box verilog">mux4to1.v</div>
+      <div class="file-label grn">design</div>
+    </div>
+    <div class="file-block">
+      <div class="file-box testbench">tb_mux.v</div>
+      <div class="file-label tb">test file</div>
+    </div>
+    <div class="file-block">
+      <div class="file-box compiled">a.out</div>
+      <div class="file-label red">compiled output</div>
+    </div>
+  </div>
+
+  <div class="filter-step">
+    <div>
+      <p style="color: var(--muted); font-size: 13px; margin-bottom: 6px;">With <code style="color:var(--red)">*</code> — grabs all 4 files including a.out:</p>
+      <div class="file-row">
+        <div class="file-block"><div class="file-box verilog">mux2to1.v</div></div>
+        <div class="file-block"><div class="file-box verilog">mux4to1.v</div></div>
+        <div class="file-block"><div class="file-box testbench">tb_mux.v</div></div>
+        <div class="file-block"><div class="file-box compiled">a.out</div></div>
+      </div>
+      <div class="callout bad" style="margin-top:10px">
+        <div class="callout-title">Result</div>
+        a.out:1: syntax error — I give up.
+      </div>
+    </div>
+  </div>
+
+  <div class="filter-step">
+    <div>
+      <p style="color: var(--muted); font-size: 13px; margin-bottom: 6px;">With <code style="color:var(--green)">*.v</code> — grabs only the 3 Verilog files:</p>
+      <div class="file-row">
+        <div class="file-block"><div class="file-box verilog">mux2to1.v</div></div>
+        <div class="file-block"><div class="file-box verilog">mux4to1.v</div></div>
+        <div class="file-block"><div class="file-box testbench">tb_mux.v</div></div>
+        <div class="file-block"><div class="file-box compiled ignored">a.out</div></div>
+      </div>
+      <div class="callout good" style="margin-top:10px">
+        <div class="callout-title">Result</div>
+        Compiles cleanly. a.out is skipped entirely.
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- S2: How top is picked -->
+<section>
+  <div class="section-header">
+    <span class="section-num">02</span>
+    <h2>How iverilog Picks What to Run</h2>
+  </div>
+
+  <p>iverilog reads all the files, then asks: <strong>which file uses all the others but is itself used by nothing?</strong> That file is the runner — it becomes the entry point of the simulation.</p>
+
+  <p>In the example below, <code>tb_mux4to1.v</code> uses <code>mux4to1.v</code>, which uses <code>mux2to1.v</code>. But nothing uses the test file — so it gets picked automatically.</p>
+
+  <div class="file-row" style="align-items:flex-start; margin-top: 24px;">
+    <div class="file-block">
+      <div class="file-box verilog">mux2to1.v</div>
+      <div class="file-label" style="color:var(--muted); font-size:10px; margin-top:4px">used by mux4to1</div>
+    </div>
+    <div style="display:flex; align-items:center; padding-bottom: 28px; color: var(--muted); font-size: 20px;">→</div>
+    <div class="file-block">
+      <div class="file-box verilog">mux4to1.v</div>
+      <div class="file-label" style="color:var(--muted); font-size:10px; margin-top:4px">used by tb</div>
+    </div>
+    <div style="display:flex; align-items:center; padding-bottom: 28px; color: var(--muted); font-size: 20px;">→</div>
+    <div class="file-block">
+      <div class="file-box testbench top-selected">tb_mux4to1.v</div>
+      <div class="file-label tb" style="font-size:10px; margin-top:4px">▲ picked as runner</div>
+    </div>
+  </div>
+
+  <div class="callout info" style="margin-top: 20px;">
+    <div class="callout-title">The Rule</div>
+    The file that uses others but is used by nothing becomes the runner. iverilog figures this out automatically — no extra flags needed.
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- S3: Unrelated file ignored -->
+<section>
+  <div class="section-header">
+    <span class="section-num">03</span>
+    <h2>Unrelated Files Are Harmless</h2>
+  </div>
+
+  <p>If a design file exists in the folder but is not connected to anything the runner uses, iverilog compiles it but never runs it. It has zero effect on the simulation output.</p>
+
+  <p>In this example, <code>adder.v</code> is in the same folder. The test file only runs the mux — so the adder is compiled and then completely ignored.</p>
+
+  <div class="file-row" style="margin-top:20px; align-items:flex-start;">
+    <div class="file-block">
+      <div class="file-box verilog">mux2to1.v</div>
+      <div class="file-label" style="color:var(--muted); font-size:10px; margin-top:4px">used by mux4to1</div>
+    </div>
+    <div style="display:flex; align-items:center; padding-bottom:28px; color:var(--muted); font-size:20px;">→</div>
+    <div class="file-block">
+      <div class="file-box verilog">mux4to1.v</div>
+      <div class="file-label" style="color:var(--muted); font-size:10px; margin-top:4px">used by tb</div>
+    </div>
+    <div style="display:flex; align-items:center; padding-bottom:28px; color:var(--muted); font-size:20px;">→</div>
+    <div class="file-block">
+      <div class="file-box testbench top-selected">tb_mux4to1.v</div>
+      <div class="file-label tb" style="font-size:10px; margin-top:4px">▲ runner</div>
+    </div>
+    <div style="display:flex; align-items:center; padding-bottom:28px; color:var(--border); font-size:20px; margin-left:10px;">╌╌</div>
+    <div class="file-block" style="margin-left:4px;">
+      <div class="file-box unrelated ignored">adder.v</div>
+      <div class="file-label org" style="font-size:10px; margin-top:4px; opacity:0.5">compiled, ignored</div>
+    </div>
+  </div>
+
+  <pre>iverilog *.v    <span style="color:var(--muted)"># adder.v is compiled but has no effect on output</span></pre>
+
+  <div class="callout warn">
+    <div class="callout-title">Safe but only to a point</div>
+    This works fine as long as there is only one test file. The moment a second test file appears (like <code>tb_adder.v</code>), iverilog gets confused about what to run — that's when you need the force flag.
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- S4: Force flag -->
+<section>
+  <div class="section-header">
+    <span class="section-num">04</span>
+    <h2>The Force Flag — -s</h2>
+  </div>
+
+  <p>When two test files exist in the same folder, iverilog finds two potential runners and either runs both or errors. The <code>-s</code> flag forces it to use a specific one and ignore everything unreachable from it.</p>
+
+  <p>Now the project has both <code>tb_mux4to1.v</code> and <code>tb_adder.v</code>. Without <code>-s</code>, both run. With <code>-s tb_adder</code>, only the adder test runs — and all the mux files become the ignored ones.</p>
+
+  <!-- Without -s: both active -->
+  <p style="color: var(--muted); font-size: 13px; margin: 20px 0 8px;">Without <code>-s</code> — both test files run:</p>
+  <div class="file-row" style="align-items:flex-start;">
+    <div class="file-block">
+      <div class="file-box verilog">mux2to1.v</div>
+    </div>
+    <div class="file-block">
+      <div class="file-box verilog">mux4to1.v</div>
+    </div>
+    <div class="file-block">
+      <div class="file-box testbench">tb_mux4to1.v</div>
+      <div class="file-label tb" style="font-size:10px; margin-top:4px">▲ runs</div>
+    </div>
+    <div class="file-block">
+      <div class="file-box unrelated">adder.v</div>
+    </div>
+    <div class="file-block">
+      <div class="file-box testbench">tb_adder.v</div>
+      <div class="file-label tb" style="font-size:10px; margin-top:4px">▲ also runs</div>
+    </div>
+  </div>
+
+  <!-- With -s tb_adder -->
+  <p style="color: var(--muted); font-size: 13px; margin: 24px 0 8px;">With <code style="color:var(--yellow)">-s tb_adder</code> — only adder test runs, mux files ignored:</p>
+  <div class="file-row" style="align-items:flex-start;">
+    <div class="file-block">
+      <div class="file-box verilog ignored">mux2to1.v</div>
+      <div class="file-label" style="font-size:10px; margin-top:4px; opacity:0.4">ignored</div>
+    </div>
+    <div class="file-block">
+      <div class="file-box verilog ignored">mux4to1.v</div>
+      <div class="file-label" style="font-size:10px; margin-top:4px; opacity:0.4">ignored</div>
+    </div>
+    <div class="file-block">
+      <div class="file-box testbench ignored">tb_mux4to1.v</div>
+      <div class="file-label" style="font-size:10px; margin-top:4px; opacity:0.4">ignored</div>
+    </div>
+    <div class="file-block">
+      <div class="file-box unrelated">adder.v</div>
+      <div class="file-label org" style="font-size:10px; margin-top:4px">used</div>
+    </div>
+    <div class="file-block">
+      <div class="file-box testbench top-selected">tb_adder.v</div>
+      <div class="file-label tb" style="font-size:10px; margin-top:4px">▲ forced runner</div>
+    </div>
+  </div>
+
+  <pre>iverilog -s tb_adder *.v</pre>
+
+  <div class="callout info">
+    <div class="callout-title">Module name, not filename</div>
+    <code>-s</code> takes the name written inside the file after the word <code>module</code>, not the filename. Use <code>-s tb_adder</code>, not <code>-s tb_adder.v</code>.
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- S5: Quick Reference -->
+<section>
+  <div class="section-header">
+    <span class="section-num">05</span>
+    <h2>Quick Reference</h2>
+  </div>
+
+  <table class="ref-table">
+    <thead><tr><th>Command</th><th>When to use it</th></tr></thead>
+    <tbody>
+      <tr><td>iverilog *.v</td><td>One test file in the folder — automatic runner detection</td></tr>
+      <tr><td>iverilog *.v -o sim.out</td><td>Same, but give the output a real name instead of a.out</td></tr>
+      <tr><td>iverilog -s tb_name *.v</td><td>Multiple test files — force a specific one to run</td></tr>
+      <tr><td>iverilog *</td><td>Never — will grab a.out and crash</td></tr>
+    </tbody>
+  </table>
+</section>
+</body>
+</html>

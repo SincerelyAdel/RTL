@@ -1,0 +1,13 @@
+\o Program:		@(#)$CDS: libManager version 31.09 10/01/2009 15:52 (cat91amd) $
+\o Sub version:		sub-version  31.09-p013 
+\o Arguments:		-mpssession virtuoso5790 -mpshost localhost.localdomain 
+\o Working Directory:	localhost.localdomain:/mnt/hgfs/Shared/RTL/LAB3/clockDivider
+\o Qt version: 		4.4.1
+\o Log file is "/mnt/hgfs/Shared/RTL/LAB3/clockDivider/libManager.log".
+\o Opening libManager window.
+\a nrSetCurrentWindow(cdsLibManager)
+\a nrResizeWindow(cdsLibManager list(0 25 952 797))
+\o changeWorkingDir("/mnt/hgfs/Shared/RTL/LAB3/clockDivider") unnecessary.
+\o ddSetForcedLib("") unnecessary.
+\o MPS service: map window
+\o Library Manager customization server connected.

@@ -1,0 +1,1048 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vim: Zero to Hero</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d1117;
+    --bg2: #161b22;
+    --bg3: #1c2128;
+    --border: #30363d;
+    --text: #c9d1d9;
+    --text-muted: #8b949e;
+    --blue: #58a6ff;
+    --green: #3fb950;
+    --orange: #d29922;
+    --red: #f85149;
+    --purple: #bc8cff;
+    --cyan: #39d0d0;
+    --yellow: #e3b341;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    line-height: 1.7;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+  }
+
+  /* HEADER */
+  .hero {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: var(--bg2);
+    padding: 40px;
+    margin-bottom: 48px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--blue), var(--green), var(--purple));
+  }
+  .hero-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--green);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .hero h1 {
+    font-size: 42px;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.1;
+    margin-bottom: 12px;
+  }
+  .hero h1 span { color: var(--blue); }
+  .hero p {
+    color: var(--text-muted);
+    font-size: 16px;
+    max-width: 580px;
+  }
+  .hero-badge {
+    display: inline-flex;
+    gap: 8px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+  }
+  .badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    background: var(--bg3);
+  }
+  .badge.b { color: var(--blue); border-color: var(--blue); }
+  .badge.g { color: var(--green); border-color: var(--green); }
+
+  /* TOC */
+  .toc {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 24px 28px;
+    margin-bottom: 48px;
+  }
+  .toc h3 {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 14px;
+  }
+  .toc ol {
+    list-style: none;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px 32px;
+  }
+  .toc ol li { counter-increment: toc; }
+  .toc ol li::before {
+    content: counter(toc, decimal-leading-zero) ". ";
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+  .toc a {
+    color: var(--blue);
+    text-decoration: none;
+    font-size: 14px;
+  }
+  .toc a:hover { text-decoration: underline; }
+  .toc { counter-reset: toc; }
+
+  /* SECTIONS */
+  section {
+    margin-bottom: 56px;
+  }
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 24px;
+  }
+  .section-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+    padding: 2px 8px;
+    border-radius: 4px;
+    flex-shrink: 0;
+  }
+  h2 {
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--blue);
+  }
+
+  p { margin-bottom: 14px; }
+  p:last-child { margin-bottom: 0; }
+
+  /* KEY TABLES */
+  .key-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    font-size: 14px;
+  }
+  .key-table thead {
+    background: var(--bg3);
+  }
+  .key-table th {
+    padding: 10px 16px;
+    text-align: left;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-bottom: 1px solid var(--border);
+  }
+  .key-table td {
+    padding: 10px 16px;
+    border-bottom: 1px solid #21262d;
+    vertical-align: top;
+  }
+  .key-table tr:last-child td { border-bottom: none; }
+  .key-table tr:hover td { background: #1c2128; }
+  .key-table .cat {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  /* KEY BADGE */
+  kbd {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    background: var(--bg3);
+    color: var(--yellow);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1px 7px;
+    white-space: nowrap;
+  }
+  kbd.b { color: var(--blue); }
+  kbd.g { color: var(--green); }
+  kbd.p { color: var(--purple); }
+  kbd.r { color: var(--red); }
+  kbd.c { color: var(--cyan); }
+
+  /* INFO BOXES */
+  .callout {
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin: 20px 0;
+    border-left: 3px solid;
+    background: var(--bg2);
+    font-size: 14px;
+  }
+  .callout.info { border-color: var(--blue); }
+  .callout.tip  { border-color: var(--green); }
+  .callout.warn { border-color: var(--orange); }
+  .callout-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 6px;
+  }
+  .callout.info .callout-title { color: var(--blue); }
+  .callout.tip  .callout-title { color: var(--green); }
+  .callout.warn .callout-title { color: var(--orange); }
+
+  /* CODE BLOCK */
+  pre {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px;
+    overflow-x: auto;
+    margin: 16px 0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  code { font-family: 'JetBrains Mono', monospace; font-size: 13px; }
+  p code, li code {
+    background: var(--bg3);
+    color: var(--blue);
+    padding: 1px 6px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+  }
+
+  /* MODE PILLS */
+  .modes {
+    display: flex;
+    gap: 12px;
+    margin: 20px 0;
+    flex-wrap: wrap;
+  }
+  .mode-pill {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 24px;
+    min-width: 120px;
+    text-align: center;
+    gap: 6px;
+  }
+  .mode-pill .mode-name {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    font-weight: 700;
+  }
+  .mode-pill .mode-key { font-size: 12px; color: var(--text-muted); }
+  .mp-n .mode-name { color: var(--blue); }
+  .mp-i .mode-name { color: var(--green); }
+  .mp-v .mode-name { color: var(--purple); }
+  .mp-c .mode-name { color: var(--orange); }
+
+  /* VIMRC */
+  .vimrc-line { display: flex; gap: 8px; }
+  .vimrc-line .comment { color: var(--text-muted); }
+  .vimrc-line .cmd { color: var(--blue); }
+  .vimrc-line .val { color: var(--green); }
+
+  /* WORKFLOW STEPS */
+  .steps { margin: 20px 0; }
+  .step {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+    margin-bottom: 16px;
+  }
+  .step-num {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: var(--blue);
+    color: #000;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    font-weight: 700;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .step-content { flex: 1; }
+  .step-content strong { color: #e6edf3; display: block; margin-bottom: 4px; }
+  .step-content p { color: var(--text-muted); font-size: 14px; margin: 0; }
+
+  ul, ol { padding-left: 24px; margin: 12px 0; }
+  li { margin-bottom: 6px; font-size: 14px; }
+  li::marker { color: var(--text-muted); }
+  strong { color: #e6edf3; }
+
+  /* FOOTER */
+  .footer {
+    text-align: center;
+    padding: 32px 0 0;
+    border-top: 1px solid var(--border);
+    color: var(--text-muted);
+    font-size: 13px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .footer span { color: var(--green); }
+
+  /* CHEATSHEET GRID */
+  .cheat-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 20px 0;
+  }
+  .cheat-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .cheat-card .cheat-title {
+    background: var(--bg3);
+    padding: 8px 14px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-bottom: 1px solid var(--border);
+  }
+  .cheat-card table { width: 100%; border-collapse: collapse; }
+  .cheat-card td { padding: 7px 14px; border-bottom: 1px solid #21262d; font-size: 13px; }
+  .cheat-card tr:last-child td { border-bottom: none; }
+  .cheat-card td:first-child { font-family: 'JetBrains Mono', monospace; color: var(--yellow); width: 48%; }
+
+  @media (max-width: 600px) {
+    .toc ol, .cheat-grid { grid-template-columns: 1fr; }
+    .modes { flex-direction: column; }
+    .hero h1 { font-size: 30px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-tag">// The Complete Reference</div>
+  <h1>Vim: <span>Zero to Hero</span></h1>
+  <p>From your first <code>:q!</code> panic to writing Verilog at the speed of thought. Everything you need, in order.</p>
+  <div class="hero-badge">
+    <span class="badge b">Terminal-First</span>
+    <span class="badge g">EDA-Ready</span>
+    <span class="badge">SSH-Friendly</span>
+    <span class="badge">No Mouse Needed</span>
+  </div>
+</div>
+
+<!-- TOC -->
+<div class="toc">
+  <h3>// Contents</h3>
+  <ol>
+    <li><a href="#s1">What is Vim, Actually?</a></li>
+    <li><a href="#s2">Modes — The Core Concept</a></li>
+    <li><a href="#s3">Surviving Your First Session</a></li>
+    <li><a href="#s4">Navigation (Move Like a Pro)</a></li>
+    <li><a href="#s5">Editing — The Power Commands</a></li>
+    <li><a href="#s6">Search & Replace</a></li>
+    <li><a href="#s7">Working with Files & Buffers</a></li>
+    <li><a href="#s8">Visual Mode & Selection</a></li>
+    <li><a href="#s9">The . Dot Operator</a></li>
+    <li><a href="#s10">Macros</a></li>
+    <li><a href="#s11">Splits & Windows</a></li>
+    <li><a href="#s12">Your .vimrc — Configuration</a></li>
+    <li><a href="#s13">Vim for Verilog / IC Design</a></li>
+    <li><a href="#s14">Quick Reference Cheatsheet</a></li>
+  </ol>
+</div>
+
+<!-- S1 -->
+<section id="s1">
+  <div class="section-header">
+    <span class="section-num">01</span>
+    <h2>What is Vim, Actually?</h2>
+  </div>
+
+  <p>Vim (Vi IMproved) is a text editor built on the philosophy that your keyboard is faster than your mouse — and your hands should never leave the home row. It's been around since 1991, runs on every Unix-like system, works over SSH, and is the de facto editor in most EDA and embedded development environments.</p>
+
+  <p>Your classmates using gedit are clicking menus to do things you'll eventually do with two keystrokes. The upfront cost is real — but it pays off fast.</p>
+
+  <div class="callout info">
+    <div class="callout-title">Why It Matters for Your Work</div>
+    When Cadence Virtuoso, your remote compile server, or any EDA tool drops you into a terminal, gedit won't be there. Vim will. Being comfortable in Vim means you're never blocked by your environment.
+  </div>
+</section>
+
+<!-- S2 -->
+<section id="s2">
+  <div class="section-header">
+    <span class="section-num">02</span>
+    <h2>Modes — The Core Concept</h2>
+  </div>
+
+  <p>This is the most important thing to understand. Unlike gedit, Vim has <strong>modes</strong>. Keys don't just type characters — they do different things depending on which mode you're in. Once this clicks, everything else makes sense.</p>
+
+  <div class="modes">
+    <div class="mode-pill mp-n">
+      <div class="mode-name">NORMAL</div>
+      <div class="mode-key">Default / <kbd>Esc</kbd></div>
+    </div>
+    <div class="mode-pill mp-i">
+      <div class="mode-name">INSERT</div>
+      <div class="mode-key">Press <kbd>i</kbd></div>
+    </div>
+    <div class="mode-pill mp-v">
+      <div class="mode-name">VISUAL</div>
+      <div class="mode-key">Press <kbd>v</kbd></div>
+    </div>
+    <div class="mode-pill mp-c">
+      <div class="mode-name">COMMAND</div>
+      <div class="mode-key">Press <kbd>:</kbd></div>
+    </div>
+  </div>
+
+  <table class="key-table">
+    <thead>
+      <tr><th>Mode</th><th>What It's For</th><th>How to Enter</th><th>How to Exit</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><kbd class="b">Normal</kbd></td>
+        <td>Navigation, deletion, copying, operators. <em>This is home base.</em></td>
+        <td>Opens here by default</td>
+        <td>Already here</td>
+      </tr>
+      <tr>
+        <td><kbd class="g">Insert</kbd></td>
+        <td>Actually typing text, like a normal editor</td>
+        <td><kbd>i</kbd>, <kbd>a</kbd>, <kbd>o</kbd>, <kbd>I</kbd>, <kbd>A</kbd>, <kbd>O</kbd></td>
+        <td><kbd>Esc</kbd></td>
+      </tr>
+      <tr>
+        <td><kbd class="p">Visual</kbd></td>
+        <td>Selecting text to copy, delete, or operate on</td>
+        <td><kbd>v</kbd> (char), <kbd>V</kbd> (line), <kbd>Ctrl+v</kbd> (block)</td>
+        <td><kbd>Esc</kbd></td>
+      </tr>
+      <tr>
+        <td><kbd class="c" style="color:var(--orange)">Command</kbd></td>
+        <td>Saving, quitting, search/replace, settings</td>
+        <td><kbd>:</kbd> from Normal mode</td>
+        <td><kbd>Enter</kbd> or <kbd>Esc</kbd></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout tip">
+    <div class="callout-title">Golden Rule</div>
+    When in doubt, press <kbd>Esc</kbd>. Multiple times if needed. It always gets you back to Normal mode, which is your safe ground.
+  </div>
+</section>
+
+<!-- S3 -->
+<section id="s3">
+  <div class="section-header">
+    <span class="section-num">03</span>
+    <h2>Surviving Your First Session</h2>
+  </div>
+
+  <p>Before anything else, you need to be able to open, edit, and exit Vim without panicking. Here's the absolute minimum to be functional.</p>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <strong>Open a file</strong>
+        <p>In your terminal: <code>vim filename.v</code> — Vim opens in Normal mode.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <strong>Start typing</strong>
+        <p>Press <kbd>i</kbd> to enter Insert mode. The bottom bar shows <code>-- INSERT --</code>. Now type normally.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <strong>Stop typing</strong>
+        <p>Press <kbd>Esc</kbd> to go back to Normal mode. The <code>-- INSERT --</code> indicator disappears.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-content">
+        <strong>Save and quit</strong>
+        <p>Type <kbd>:</kbd><kbd>w</kbd><kbd>q</kbd> then press <kbd>Enter</kbd>. <code>:w</code> = write (save), <code>:q</code> = quit.</p>
+      </div>
+    </div>
+  </div>
+
+  <table class="key-table">
+    <thead><tr><th>Command</th><th>Action</th></tr></thead>
+    <tbody>
+      <tr><td><kbd>:w</kbd></td><td>Save (write) the file</td></tr>
+      <tr><td><kbd>:q</kbd></td><td>Quit (only works if no unsaved changes)</td></tr>
+      <tr><td><kbd>:wq</kbd></td><td>Save and quit</td></tr>
+      <tr><td><kbd>:q!</kbd></td><td>Force quit, discard all unsaved changes</td></tr>
+      <tr><td><kbd>:w!</kbd></td><td>Force save (overrides read-only in some cases)</td></tr>
+      <tr><td><kbd>ZZ</kbd></td><td>Save and quit (shortcut, no colon needed)</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout warn">
+    <div class="callout-title">The Classic Trap</div>
+    You open Vim accidentally and can't get out. Solution: press <kbd>Esc</kbd> a few times, then type <kbd>:q!</kbd> and hit <kbd>Enter</kbd>. You're free.
+  </div>
+</section>
+
+<!-- S4 -->
+<section id="s4">
+  <div class="section-header">
+    <span class="section-num">04</span>
+    <h2>Navigation — Move Like a Pro</h2>
+  </div>
+
+  <p>This is where Vim becomes genuinely faster than anything else. In Normal mode, you don't use arrow keys (you can, but it's slow). You use the home row and motion commands that scale to any distance.</p>
+
+  <table class="key-table">
+    <thead><tr><th>Key</th><th>Movement</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td class="cat" colspan="3">Basic</td></tr>
+      <tr><td><kbd>h j k l</kbd></td><td>← ↓ ↑ →</td><td>Home row movement, your foundation</td></tr>
+      <tr><td class="cat" colspan="3">Word Jumps</td></tr>
+      <tr><td><kbd>w</kbd></td><td>Next word start</td><td>Uppercase <kbd>W</kbd> ignores punctuation</td></tr>
+      <tr><td><kbd>b</kbd></td><td>Previous word start</td><td>Think "back"</td></tr>
+      <tr><td><kbd>e</kbd></td><td>End of current/next word</td><td>Very useful with operators</td></tr>
+      <tr><td class="cat" colspan="3">Line Navigation</td></tr>
+      <tr><td><kbd>0</kbd></td><td>Start of line (column 0)</td><td></td></tr>
+      <tr><td><kbd>^</kbd></td><td>First non-blank character</td><td>Usually more useful than <kbd>0</kbd></td></tr>
+      <tr><td><kbd>$</kbd></td><td>End of line</td><td></td></tr>
+      <tr><td class="cat" colspan="3">File Navigation</td></tr>
+      <tr><td><kbd>gg</kbd></td><td>Go to first line</td><td></td></tr>
+      <tr><td><kbd>G</kbd></td><td>Go to last line</td><td></td></tr>
+      <tr><td><kbd>42G</kbd></td><td>Go to line 42</td><td>Any number + G</td></tr>
+      <tr><td><kbd>Ctrl+d</kbd></td><td>Scroll down half-page</td><td>Fast scrolling</td></tr>
+      <tr><td><kbd>Ctrl+u</kbd></td><td>Scroll up half-page</td><td></td></tr>
+      <tr><td class="cat" colspan="3">Character Search on Line</td></tr>
+      <tr><td><kbd>f</kbd> + char</td><td>Jump to next occurrence of char on this line</td><td><kbd>;</kbd> repeats, <kbd>,</kbd> goes back</td></tr>
+      <tr><td><kbd>t</kbd> + char</td><td>Jump to just before char</td><td>Great with operators</td></tr>
+      <tr><td><kbd>%</kbd></td><td>Jump to matching bracket / parenthesis</td><td>Invaluable in Verilog</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout tip">
+    <div class="callout-title">Count Prefix — Multiply Any Motion</div>
+    Any motion can be prefixed with a number. <kbd>3w</kbd> = jump 3 words forward. <kbd>5j</kbd> = go down 5 lines. <kbd>10b</kbd> = jump 10 words back. This is how Vim movement becomes genuinely faster than clicking.
+  </div>
+</section>
+
+<!-- S5 -->
+<section id="s5">
+  <div class="section-header">
+    <span class="section-num">05</span>
+    <h2>Editing — The Power Commands</h2>
+  </div>
+
+  <p>Vim's editing model is <strong>operator + motion</strong>. An operator (like delete or yank) acts on whatever the motion covers. Once you internalize this, Vim starts to feel like a language, not a tool.</p>
+
+  <table class="key-table">
+    <thead><tr><th>Key</th><th>Action</th><th>Example</th></tr></thead>
+    <tbody>
+      <tr><td class="cat" colspan="3">Entering Insert Mode</td></tr>
+      <tr><td><kbd>i</kbd></td><td>Insert before cursor</td><td>Most common</td></tr>
+      <tr><td><kbd>a</kbd></td><td>Insert after cursor</td><td>Think "append"</td></tr>
+      <tr><td><kbd>I</kbd></td><td>Insert at start of line</td><td></td></tr>
+      <tr><td><kbd>A</kbd></td><td>Insert at end of line</td><td>Very common</td></tr>
+      <tr><td><kbd>o</kbd></td><td>Open new line below, enter Insert</td><td>Use constantly</td></tr>
+      <tr><td><kbd>O</kbd></td><td>Open new line above, enter Insert</td><td></td></tr>
+      <tr><td class="cat" colspan="3">Deletion (operator: d)</td></tr>
+      <tr><td><kbd>dw</kbd></td><td>Delete to next word</td><td></td></tr>
+      <tr><td><kbd>dd</kbd></td><td>Delete entire line</td><td>The repeated operator = current line</td></tr>
+      <tr><td><kbd>d$</kbd></td><td>Delete to end of line</td><td>Same as <kbd>D</kbd></td></tr>
+      <tr><td><kbd>dG</kbd></td><td>Delete from here to end of file</td><td>Powerful but careful</td></tr>
+      <tr><td><kbd>d3w</kbd></td><td>Delete 3 words</td><td>Count works with any operator + motion</td></tr>
+      <tr><td><kbd>x</kbd></td><td>Delete character under cursor</td><td></td></tr>
+      <tr><td class="cat" colspan="3">Change (delete + enter insert: c)</td></tr>
+      <tr><td><kbd>cw</kbd></td><td>Delete word, enter Insert</td><td>Probably the most used command</td></tr>
+      <tr><td><kbd>cc</kbd></td><td>Delete entire line, enter Insert</td><td></td></tr>
+      <tr><td><kbd>c$</kbd></td><td>Change to end of line</td><td>Same as <kbd>C</kbd></td></tr>
+      <tr><td><kbd>ciw</kbd></td><td>Change <em>inner word</em></td><td>Cursor can be anywhere in the word</td></tr>
+      <tr><td><kbd>ci"</kbd></td><td>Change inside quotes</td><td>Text objects — see below</td></tr>
+      <tr><td class="cat" colspan="3">Copy & Paste (yank & put)</td></tr>
+      <tr><td><kbd>yy</kbd></td><td>Yank (copy) entire line</td><td></td></tr>
+      <tr><td><kbd>yw</kbd></td><td>Yank word</td><td></td></tr>
+      <tr><td><kbd>p</kbd></td><td>Paste after cursor/below line</td><td></td></tr>
+      <tr><td><kbd>P</kbd></td><td>Paste before cursor/above line</td><td></td></tr>
+      <tr><td class="cat" colspan="3">Undo & Redo</td></tr>
+      <tr><td><kbd>u</kbd></td><td>Undo</td><td>Repeat to undo multiple steps</td></tr>
+      <tr><td><kbd>Ctrl+r</kbd></td><td>Redo</td><td></td></tr>
+      <tr><td><kbd>r</kbd> + char</td><td>Replace single character under cursor</td><td>No insert mode needed</td></tr>
+    </tbody>
+  </table>
+
+  <p>Text objects deserve special attention — they're one of Vim's killer features:</p>
+
+  <table class="key-table">
+    <thead><tr><th>Text Object</th><th>Meaning</th><th>Works With</th></tr></thead>
+    <tbody>
+      <tr><td><kbd>iw</kbd></td><td>Inner word (word only)</td><td><kbd>c</kbd>, <kbd>d</kbd>, <kbd>y</kbd>, <kbd>v</kbd></td></tr>
+      <tr><td><kbd>aw</kbd></td><td>A word (word + surrounding space)</td><td><kbd>c</kbd>, <kbd>d</kbd>, <kbd>y</kbd>, <kbd>v</kbd></td></tr>
+      <tr><td><kbd>i"</kbd></td><td>Inside double quotes</td><td><kbd>ci"</kbd> to rewrite string content</td></tr>
+      <tr><td><kbd>i(</kbd> or <kbd>ib</kbd></td><td>Inside parentheses</td><td><kbd>di(</kbd> to delete args</td></tr>
+      <tr><td><kbd>i{</kbd> or <kbd>iB</kbd></td><td>Inside curly braces</td><td>Perfect for module bodies in Verilog</td></tr>
+      <tr><td><kbd>is</kbd></td><td>Inner sentence</td><td></td></tr>
+      <tr><td><kbd>ip</kbd></td><td>Inner paragraph</td><td></td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- S6 -->
+<section id="s6">
+  <div class="section-header">
+    <span class="section-num">06</span>
+    <h2>Search & Replace</h2>
+  </div>
+
+  <table class="key-table">
+    <thead><tr><th>Command</th><th>Action</th></tr></thead>
+    <tbody>
+      <tr><td><kbd>/pattern</kbd></td><td>Search forward for "pattern" (press Enter)</td></tr>
+      <tr><td><kbd>?pattern</kbd></td><td>Search backward</td></tr>
+      <tr><td><kbd>n</kbd></td><td>Next match</td></tr>
+      <tr><td><kbd>N</kbd></td><td>Previous match</td></tr>
+      <tr><td><kbd>*</kbd></td><td>Search for word under cursor (forward)</td></tr>
+      <tr><td><kbd>#</kbd></td><td>Search for word under cursor (backward)</td></tr>
+      <tr><td><kbd>:noh</kbd></td><td>Clear search highlights</td></tr>
+    </tbody>
+  </table>
+
+  <p>Search and replace uses the <code>:s</code> (substitute) command, one of Vim's most powerful tools:</p>
+
+<pre><span style="color:var(--text-muted)">" Replace first 'wire' with 'reg' on current line</span>
+<span style="color:var(--blue)">:s</span>/wire/reg/
+
+<span style="color:var(--text-muted)">" Replace all occurrences on current line</span>
+<span style="color:var(--blue)">:s</span>/wire/reg/<span style="color:var(--green)">g</span>
+
+<span style="color:var(--text-muted)">" Replace all occurrences in entire file</span>
+<span style="color:var(--blue)">:%s</span>/wire/reg/<span style="color:var(--green)">g</span>
+
+<span style="color:var(--text-muted)">" Replace with confirmation prompt (y/n/a/q)</span>
+<span style="color:var(--blue)">:%s</span>/wire/reg/<span style="color:var(--green)">gc</span>
+
+<span style="color:var(--text-muted)">" Case-insensitive replace</span>
+<span style="color:var(--blue)">:%s</span>/wire/reg/<span style="color:var(--green)">gi</span>
+
+<span style="color:var(--text-muted)">" Replace only in lines 10 to 25</span>
+<span style="color:var(--blue)">:10,25s</span>/wire/reg/<span style="color:var(--green)">g</span></pre>
+</section>
+
+<!-- S7 -->
+<section id="s7">
+  <div class="section-header">
+    <span class="section-num">07</span>
+    <h2>Working with Files & Buffers</h2>
+  </div>
+
+  <table class="key-table">
+    <thead><tr><th>Command</th><th>Action</th></tr></thead>
+    <tbody>
+      <tr><td><kbd>:e filename</kbd></td><td>Open a file (edit)</td></tr>
+      <tr><td><kbd>:e!</kbd></td><td>Reload current file, discard changes</td></tr>
+      <tr><td><kbd>:ls</kbd></td><td>List all open buffers</td></tr>
+      <tr><td><kbd>:bn</kbd></td><td>Next buffer</td></tr>
+      <tr><td><kbd>:bp</kbd></td><td>Previous buffer</td></tr>
+      <tr><td><kbd>:b3</kbd></td><td>Jump to buffer 3</td></tr>
+      <tr><td><kbd>:bd</kbd></td><td>Delete (close) current buffer</td></tr>
+      <tr><td><kbd>Ctrl+^</kbd></td><td>Toggle between last two buffers</td></tr>
+      <tr><td><kbd>:w newname.v</kbd></td><td>Save as a new file name</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout info">
+    <div class="callout-title">Working with Multiple Files</div>
+    Open multiple files at once: <code>vim file1.v file2.v testbench.v</code>. Vim loads them as buffers. Use <code>:ls</code> to see them and <code>:b &lt;name&gt;</code> to switch. Much faster than opening separate windows.
+  </div>
+</section>
+
+<!-- S8 -->
+<section id="s8">
+  <div class="section-header">
+    <span class="section-num">08</span>
+    <h2>Visual Mode & Selection</h2>
+  </div>
+
+  <p>Visual mode lets you select text and then apply operators to the selection. There are three variants:</p>
+
+  <table class="key-table">
+    <thead><tr><th>Key</th><th>Mode</th><th>Best For</th></tr></thead>
+    <tbody>
+      <tr><td><kbd>v</kbd></td><td>Character visual</td><td>Selecting arbitrary text ranges</td></tr>
+      <tr><td><kbd>V</kbd></td><td>Line visual</td><td>Selecting whole lines (most common)</td></tr>
+      <tr><td><kbd>Ctrl+v</kbd></td><td>Block visual</td><td>Column editing — add same text to multiple lines</td></tr>
+    </tbody>
+  </table>
+
+  <p>Once you have a selection, apply any operator: <kbd>d</kbd> to delete, <kbd>y</kbd> to yank, <kbd>c</kbd> to change, <kbd>&gt;</kbd> to indent, <kbd>&lt;</kbd> to un-indent, <kbd>~</kbd> to toggle case.</p>
+
+  <div class="callout tip">
+    <div class="callout-title">Block Edit — Extremely Useful for Verilog</div>
+    Press <kbd>Ctrl+v</kbd>, select down multiple lines, press <kbd>I</kbd> (capital i), type your text, then press <kbd>Esc</kbd>. The text is inserted at the start of every selected line simultaneously. Perfect for adding <code>//</code> comments to multiple lines or aligning port declarations.
+  </div>
+</section>
+
+<!-- S9 -->
+<section id="s9">
+  <div class="section-header">
+    <span class="section-num">09</span>
+    <h2>The . Dot Operator — Repeat Last Change</h2>
+  </div>
+
+  <p>The dot command <kbd>.</kbd> repeats your last change. It sounds simple but it's one of the most powerful things in Vim. The moment something "clicks" with the dot operator is the moment Vim starts feeling genuinely fast.</p>
+
+  <p>Example: You want to add a semicolon to the end of 15 lines that are missing one.</p>
+  <ol>
+    <li>Go to the first line, press <kbd>A</kbd> (insert at end), type <kbd>;</kbd>, then press <kbd>Esc</kbd></li>
+    <li>Move to the next line</li>
+    <li>Press <kbd>.</kbd> — it repeats the entire "append semicolon" action</li>
+    <li>Repeat: move, <kbd>.</kbd>, move, <kbd>.</kbd></li>
+  </ol>
+
+  <div class="callout tip">
+    <div class="callout-title">Design Principle</div>
+    Think about your edits in terms of "what would I want to repeat?" and structure your actions accordingly. A good Vim workflow optimizes for repeatability with <kbd>.</kbd>.
+  </div>
+</section>
+
+<!-- S10 -->
+<section id="s10">
+  <div class="section-header">
+    <span class="section-num">10</span>
+    <h2>Macros — Record & Replay Any Sequence</h2>
+  </div>
+
+  <p>Macros let you record an arbitrary sequence of keystrokes and replay it. This is the ultimate automation tool for repetitive edits.</p>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <strong>Start recording</strong>
+        <p>Press <kbd>q</kbd> then a letter (e.g. <kbd>a</kbd>) to record into register <code>a</code>. The status bar shows <code>recording @a</code>.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <strong>Do your actions</strong>
+        <p>Navigate, edit, move to the next line — do the exact sequence you want to repeat.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <strong>Stop recording</strong>
+        <p>Press <kbd>q</kbd> again.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-content">
+        <strong>Replay</strong>
+        <p>Press <kbd>@a</kbd> to run the macro. Press <kbd>@@</kbd> to repeat the last macro. Use <kbd>50@a</kbd> to run it 50 times.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout info">
+    <div class="callout-title">Practical Example</div>
+    You have 30 lines of signal declarations you need to wrap in <code>assign</code> statements. Record a macro that goes to start of line, types "assign ", goes to end of line, types " = 1'b0;", then moves down one line. Run it 29 more times with <kbd>29@a</kbd>.
+  </div>
+</section>
+
+<!-- S11 -->
+<section id="s11">
+  <div class="section-header">
+    <span class="section-num">11</span>
+    <h2>Splits & Windows</h2>
+  </div>
+
+  <p>Vim can split into multiple panes, letting you view different files (or different parts of the same file) side by side — all in the terminal.</p>
+
+  <table class="key-table">
+    <thead><tr><th>Command</th><th>Action</th></tr></thead>
+    <tbody>
+      <tr><td><kbd>:sp filename</kbd></td><td>Horizontal split, open file</td></tr>
+      <tr><td><kbd>:vsp filename</kbd></td><td>Vertical split, open file</td></tr>
+      <tr><td><kbd>Ctrl+w h/j/k/l</kbd></td><td>Move focus to left/down/up/right pane</td></tr>
+      <tr><td><kbd>Ctrl+w w</kbd></td><td>Cycle through panes</td></tr>
+      <tr><td><kbd>Ctrl+w =</kbd></td><td>Make all panes equal size</td></tr>
+      <tr><td><kbd>Ctrl+w q</kbd></td><td>Close current pane</td></tr>
+      <tr><td><kbd>Ctrl+w r</kbd></td><td>Rotate panes</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout tip">
+    <div class="callout-title">Common Workflow for IC Design</div>
+    Open your design file on the left, testbench on the right: <code>vim design.v</code> → <code>:vsp testbench.v</code>. Reference them side by side without switching windows.
+  </div>
+</section>
+
+<!-- S12 -->
+<section id="s12">
+  <div class="section-header">
+    <span class="section-num">12</span>
+    <h2>Your .vimrc — Configuration</h2>
+  </div>
+
+  <p>The <code>~/.vimrc</code> file is your personal Vim configuration. It's loaded every time Vim starts. Here's a solid starting configuration for IC/Verilog work:</p>
+
+<pre><span style="color:var(--text-muted)">" ~/.vimrc — IC Designer's Starter Config</span>
+
+<span style="color:var(--text-muted)">" ─── Core Settings ─────────────────────────</span>
+<span style="color:var(--blue)">set nocompatible</span>            <span style="color:var(--text-muted)">" Use Vim defaults, not Vi</span>
+<span style="color:var(--blue)">set number</span>                  <span style="color:var(--text-muted)">" Show line numbers</span>
+<span style="color:var(--blue)">set relativenumber</span>          <span style="color:var(--text-muted)">" Relative numbers (great for motions)</span>
+<span style="color:var(--blue)">set cursorline</span>              <span style="color:var(--text-muted)">" Highlight current line</span>
+<span style="color:var(--blue)">set showmatch</span>               <span style="color:var(--text-muted)">" Highlight matching brackets</span>
+<span style="color:var(--blue)">set hlsearch</span>                <span style="color:var(--text-muted)">" Highlight search results</span>
+<span style="color:var(--blue)">set incsearch</span>               <span style="color:var(--text-muted)">" Search as you type</span>
+<span style="color:var(--blue)">set ignorecase</span>              <span style="color:var(--text-muted)">" Case-insensitive search...</span>
+<span style="color:var(--blue)">set smartcase</span>               <span style="color:var(--text-muted)">" ...unless you use a capital letter</span>
+
+<span style="color:var(--text-muted)">" ─── Indentation ───────────────────────────</span>
+<span style="color:var(--blue)">set tabstop</span>=<span style="color:var(--green)">4</span>
+<span style="color:var(--blue)">set shiftwidth</span>=<span style="color:var(--green)">4</span>
+<span style="color:var(--blue)">set expandtab</span>               <span style="color:var(--text-muted)">" Use spaces instead of tabs</span>
+<span style="color:var(--blue)">set autoindent</span>
+<span style="color:var(--blue)">set smartindent</span>
+
+<span style="color:var(--text-muted)">" ─── Usability ─────────────────────────────</span>
+<span style="color:var(--blue)">set scrolloff</span>=<span style="color:var(--green)">8</span>            <span style="color:var(--text-muted)">" Keep 8 lines visible above/below cursor</span>
+<span style="color:var(--blue)">set wildmenu</span>                <span style="color:var(--text-muted)">" Better command completion</span>
+<span style="color:var(--blue)">set ruler</span>                   <span style="color:var(--text-muted)">" Show cursor position</span>
+<span style="color:var(--blue)">set backspace</span>=indent,eol,start
+<span style="color:var(--blue)">syntax on</span>                   <span style="color:var(--text-muted)">" Syntax highlighting</span>
+<span style="color:var(--blue)">filetype plugin indent on</span>
+
+<span style="color:var(--text-muted)">" ─── Key Remaps ────────────────────────────</span>
+<span style="color:var(--text-muted)">" Map jk to Esc — never reach for Esc again</span>
+<span style="color:var(--blue)">inoremap</span> jk <span style="color:var(--orange)">&lt;Esc&gt;</span>
+
+<span style="color:var(--text-muted)">" Clear search highlight with Enter</span>
+<span style="color:var(--blue)">nnoremap</span> <span style="color:var(--orange)">&lt;CR&gt;</span> :noh<span style="color:var(--orange)">&lt;CR&gt;</span>
+
+<span style="color:var(--text-muted)">" Save with Ctrl+s</span>
+<span style="color:var(--blue)">nnoremap</span> <span style="color:var(--orange)">&lt;C-s&gt;</span> :w<span style="color:var(--orange)">&lt;CR&gt;</span>
+<span style="color:var(--blue)">inoremap</span> <span style="color:var(--orange)">&lt;C-s&gt;</span> <span style="color:var(--orange)">&lt;Esc&gt;</span>:w<span style="color:var(--orange)">&lt;CR&gt;</span>a
+
+<span style="color:var(--text-muted)">" Move between splits with Ctrl+hjkl</span>
+<span style="color:var(--blue)">nnoremap</span> <span style="color:var(--orange)">&lt;C-h&gt;</span> <span style="color:var(--orange)">&lt;C-w&gt;</span>h
+<span style="color:var(--blue)">nnoremap</span> <span style="color:var(--orange)">&lt;C-j&gt;</span> <span style="color:var(--orange)">&lt;C-w&gt;</span>j
+<span style="color:var(--blue)">nnoremap</span> <span style="color:var(--orange)">&lt;C-k&gt;</span> <span style="color:var(--orange)">&lt;C-w&gt;</span>k
+<span style="color:var(--blue)">nnoremap</span> <span style="color:var(--orange)">&lt;C-l&gt;</span> <span style="color:var(--orange)">&lt;C-w&gt;</span>l
+
+<span style="color:var(--text-muted)">" ─── Verilog / HDL specific ─────────────────</span>
+<span style="color:var(--blue)">autocmd</span> FileType verilog,systemverilog setlocal tabstop=<span style="color:var(--green)">4</span> shiftwidth=<span style="color:var(--green)">4</span></pre>
+
+  <div class="callout tip">
+    <div class="callout-title">The jk Escape Remap</div>
+    Adding <code>inoremap jk &lt;Esc&gt;</code> to your .vimrc is a game-changer. Typing "jk" in insert mode instantly drops you back to Normal mode. Your fingers never have to leave the home row.
+  </div>
+</section>
+
+<!-- S13 -->
+<section id="s13">
+  <div class="section-header">
+    <span class="section-num">13</span>
+    <h2>Vim for Verilog / IC Design</h2>
+  </div>
+
+  <p>Vim handles Verilog natively with syntax highlighting. Here are patterns you'll use constantly in your work at EQSemi:</p>
+
+  <table class="key-table">
+    <thead><tr><th>Task</th><th>How to Do It in Vim</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>Rename a signal everywhere</td>
+        <td><code>:%s/old_sig/new_sig/gc</code> — with confirmation per match</td>
+      </tr>
+      <tr>
+        <td>Comment/uncomment a block</td>
+        <td><kbd>Ctrl+v</kbd> → select lines → <kbd>I</kbd> → type <code>//</code> → <kbd>Esc</kbd></td>
+      </tr>
+      <tr>
+        <td>Jump to matching begin/end</td>
+        <td><kbd>%</kbd> on a bracket or <code>begin</code>/<code>end</code></td>
+      </tr>
+      <tr>
+        <td>Indent a block of ports</td>
+        <td><kbd>V</kbd> to select lines → <kbd>&gt;</kbd> to indent, <kbd>&lt;</kbd> to un-indent</td>
+      </tr>
+      <tr>
+        <td>Duplicate a module port declaration</td>
+        <td><kbd>yy</kbd> to yank line, <kbd>p</kbd> to paste, then <kbd>cw</kbd> to rename</td>
+      </tr>
+      <tr>
+        <td>Go to a specific line number</td>
+        <td><kbd>42G</kbd> or <code>:42</code> — fast when compiler gives you an error line</td>
+      </tr>
+      <tr>
+        <td>Search for a module instantiation</td>
+        <td><code>/module_name</code> then <kbd>n</kbd> to cycle through</td>
+      </tr>
+      <tr>
+        <td>Add assign to 20 lines at once</td>
+        <td>Record macro: <kbd>qa</kbd> → <kbd>I</kbd> → <code>assign </code> → <kbd>Esc</kbd> → <kbd>j</kbd> → <kbd>q</kbd> → <kbd>19@a</kbd></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout info">
+    <div class="callout-title">Enable Verilog Syntax Highlighting</div>
+    Modern Vim has built-in Verilog support. Just open any <code>.v</code> or <code>.sv</code> file and syntax highlighting is automatic. If it's not working, add <code>syntax on</code> and <code>filetype on</code> to your .vimrc.
+  </div>
+</section>
+
+<!-- S14 -->
+<section id="s14">
+  <div class="section-header">
+    <span class="section-num">14</span>
+    <h2>Quick Reference Cheatsheet</h2>
+  </div>
+
+  <div class="cheat-grid">
+    <div class="cheat-card">
+      <div class="cheat-title">Files & Quitting</div>
+      <table>
+        <tr><td>:w</td><td>Save</td></tr>
+        <tr><td>:q</td><td>Quit</td></tr>
+        <tr><td>:wq / ZZ</td><td>Save & quit</td></tr>
+        <tr><td>:q!</td><td>Force quit</td></tr>
+        <tr><td>:e file</td><td>Open file</td></tr>
+        <tr><td>:ls</td><td>List buffers</td></tr>
+      </table>
+    </div>
+    <div class="cheat-card">
+      <div class="cheat-title">Enter Insert Mode</div>
+      <table>
+        <tr><td>i</td><td>Before cursor</td></tr>
+        <tr><td>a</td><td>After cursor</td></tr>
+        <tr><td>I</td><td>Start of line</td></tr>
+        <tr><td>A</td><td>End of line</td></tr>
+        <tr><td>o</td><td>New line below</td></tr>
+        <tr><td>O</td><td>New line above</td></tr>
+      </table>
+    </div>
+    <div class="cheat-card">
+      <div class="cheat-title">Navigation</div>
+      <table>
+        <tr><td>h j k l</td><td>← ↓ ↑ →</td></tr>
+        <tr><td>w / b</td><td>Next / prev word</td></tr>
+        <tr><td>0 / $</td><td>Line start / end</td></tr>
+        <tr><td>gg / G</td><td>File start / end</td></tr>
+        <tr><td>42G</td><td>Go to line 42</td></tr>
+        <tr><td>%</td><td>Jump to bracket</td></tr>
+      </table>
+    </div>
+    <div class="cheat-card">
+      <div class="cheat-title">Edit Operators</div>
+      <table>
+        <tr><td>dd / dw</td><td>Delete line / word</td></tr>
+        <tr><td>cc / cw</td><td>Change line / word</td></tr>
+        <tr><td>yy / yw</td><td>Yank line / word</td></tr>
+        <tr><td>p / P</td><td>Paste after / before</td></tr>
+        <tr><td>u / Ctrl+r</td><td>Undo / Redo</td></tr>
+        <tr><td>.</td><td>Repeat last change</td></tr>
+      </table>
+    </div>
+    <div class="cheat-card">
+      <div class="cheat-title">Search</div>
+      <table>
+        <tr><td>/word</td><td>Search forward</td></tr>
+        <tr><td>?word</td><td>Search backward</td></tr>
+        <tr><td>n / N</td><td>Next / prev match</td></tr>
+        <tr><td>*</td><td>Search word at cursor</td></tr>
+        <tr><td>:noh</td><td>Clear highlights</td></tr>
+        <tr><td>:%s/a/b/g</td><td>Replace all in file</td></tr>
+      </table>
+    </div>
+    <div class="cheat-card">
+      <div class="cheat-title">Splits & Macros</div>
+      <table>
+        <tr><td>:vsp file</td><td>Vertical split</td></tr>
+        <tr><td>:sp file</td><td>Horizontal split</td></tr>
+        <tr><td>Ctrl+w hjkl</td><td>Move between panes</td></tr>
+        <tr><td>qa</td><td>Record macro to a</td></tr>
+        <tr><td>q</td><td>Stop recording</td></tr>
+        <tr><td>@a / @@</td><td>Play macro / repeat</td></tr>
+      </table>
+    </div>
+  </div>
+</section>
+
+<div class="callout tip" style="margin-bottom: 48px;">
+  <div class="callout-title">// Learning Path Recommendation</div>
+  <strong>Week 1:</strong> Survive — master Section 3 (open, edit, save, quit) and basic hjkl navigation. Don't try to go fast yet.<br>
+  <strong>Week 2:</strong> Get efficient — learn word motions (w, b, e), and the core operators (d, c, y, p). Start using the dot operator.<br>
+  <strong>Week 3:</strong> Level up — text objects (ciw, ci"), visual block mode, search and replace. Set up your .vimrc.<br>
+  <strong>Month 2:</strong> You'll be faster than your gedit classmates. By Month 3, you won't be able to go back.
+</div>
+
+<div class="footer">
+  <p>vim zero-to-hero · for Adel Saer · IC Design @ EQSemi</p>
+  <p style="margin-top:4px; color: var(--border)">:wq <span>✓</span></p>
+</div>
+
+</body>
+</html>

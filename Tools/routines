@@ -1,0 +1,30 @@
+#-------------   MY BASH CUSTOMIZATION, TO USE: cat routines >> ~/.bashrc && source ~/.bashrc   ------------------------
+
+# System Traversal Routines
+cd() { # Shows contents when you cd
+    builtin cd "$@" && ls -l | head -20 
+}
+
+# Verilog Compilation Routines (Functions)
+compile() { # Verilog Compile Routine, to use: compile - OR - compile [testbench name] (in case there's multiple testbenches)
+    echo "Compiling..."
+    if iverilog ${1:+-s $1} *.v; then
+        echo "Compiled successfully"
+    else
+        echo "Compilation failed"
+    fi
+}
+
+run() { # Verilog Run Routine, to use: run - OR - run [testbench name] (in case there's multiple testbenches)
+    echo "Compiling..."
+    if iverilog ${1:+-s $1} *.v; then
+        echo "Compiled successfully, running..."
+        vvp a.out
+    else
+        echo "Compilation failed"
+    fi
+}
+
+tree() { # tree command to print entire directories
+    find ${1:-.} -print | sed -e 's;[^/]*/;|____;g;s;____|; |;g'
+}
