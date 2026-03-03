@@ -11,3 +11,12 @@
 \o ddSetForcedLib("") unnecessary.
 \o MPS service: map window
 \o Library Manager customization server connected.
+\a nrSetCurrentWindow(cdsLibManager)
+\a nrResizeWindow(cdsLibManager list(505 148 952 797))
+\a cdsLibManager->libListBox->value = "rfExamples"
+\a cdsLibManager->libListBox->value = "tsmc13rf"
+\a cdsLibManager->libListBox->value = "rfExamples"
+\a cdsLibManager->libLineEdit->value = "rfExamples"
+\a nrSetWindowVisibility(cdsLibManager "hide")
+\o libManager is exiting.
+\a exit(0)
