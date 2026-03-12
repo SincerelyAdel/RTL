@@ -1,4 +1,4 @@
-module FIFO(parameter WIDTH = 8, parameter DEPTH = 4) (clk, rst, data_in, wr_en, re_en, data_out, full, empty);
+module FIFO #(parameter WIDTH = 8, parameter DEPTH = 4) (clk, rst, data_in, wr_en, re_en, data_out, full, empty);
     input clk, rst, wr_en, re_en;
     input [WIDTH-1:0] data_in;
 
@@ -16,7 +16,7 @@ module FIFO(parameter WIDTH = 8, parameter DEPTH = 4) (clk, rst, data_in, wr_en,
         if (rst) begin
             count <= 0;
             data_out <= 0;
-            for (i = 0; i < DEPTH; i++)
+            for (i = 0; i < DEPTH; i = i + 1)
                 memory[i] <= 0;
         end else begin
             if (!full && wr_en && !(!empty && re_en)) begin
@@ -24,7 +24,7 @@ module FIFO(parameter WIDTH = 8, parameter DEPTH = 4) (clk, rst, data_in, wr_en,
                 count <= count + 1;
             end 
 
-            if (!empty && re_end && !(!full && wr_en)) begin
+            if (!empty && re_en && !(!full && wr_en)) begin
                 data_out <= memory[0];
                 for (i = 0; i < DEPTH; i = i + 1)
                     memory[i] <= memory[i+1];

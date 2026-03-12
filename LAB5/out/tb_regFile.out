@@ -1,0 +1,138 @@
+#! /c/iverilog/bin/vvp
+:ivl_version "0.9.7 " "(v0_9_7)";
+:vpi_time_precision - 12;
+:vpi_module "system";
+:vpi_module "v2005_math";
+:vpi_module "va_math";
+S_0118ABB0 .scope module, "tb_regFile" "tb_regFile" 2 1;
+ .timescale -9 -12;
+v011800D8_0 .var "clk", 0 0;
+v01180130_0 .var "rd", 4 0;
+v011801E0_0 .net "rd1", 31 0, L_011805A8; 1 drivers
+v01180188_0 .net "rd2", 31 0, L_011B5C68; 1 drivers
+v011804A0_0 .var "rs1", 4 0;
+v01180448_0 .var "rs2", 4 0;
+v01180238_0 .var "wd", 31 0;
+v011804F8_0 .var "we", 0 0;
+S_0118A550 .scope module, "uut" "regFile" 2 8, 3 1, S_0118ABB0;
+ .timescale 0 0;
+v0118D1A0_0 .net *"_s0", 4 0, C4<00000>; 1 drivers
+v0118D1F8_0 .net *"_s10", 4 0, C4<00000>; 1 drivers
+v0118D250_0 .net *"_s12", 0 0, L_011803F0; 1 drivers
+v0114B900_0 .net *"_s14", 31 0, C4<00000000000000000000000000000000>; 1 drivers
+v0114B958_0 .net *"_s16", 31 0, L_011B5FD8; 1 drivers
+v0114B9B0_0 .net *"_s2", 0 0, L_01180550; 1 drivers
+v0118BDA8_0 .net *"_s4", 31 0, C4<00000000000000000000000000000000>; 1 drivers
+v0118BE00_0 .net *"_s6", 31 0, L_01180398; 1 drivers
+v01180340_0 .net "clk", 0 0, v011800D8_0; 1 drivers
+v01180658_0 .var/i "i", 31 0;
+v01180290_0 .net "rd", 4 0, v01180130_0; 1 drivers
+v01180760_0 .alias "rd1", 31 0, v011801E0_0;
+v01180600_0 .alias "rd2", 31 0, v01180188_0;
+v011802E8 .array "regs", 31 0, 31 0;
+v011806B0_0 .net "rs1", 4 0, v011804A0_0; 1 drivers
+v011807B8_0 .net "rs2", 4 0, v01180448_0; 1 drivers
+v01180708_0 .net "wd", 31 0, v01180238_0; 1 drivers
+v01180810_0 .net "we", 0 0, v011804F8_0; 1 drivers
+E_01148870 .event posedge, v01180340_0;
+L_01180550 .cmp/eq 5, v011804A0_0, C4<00000>;
+L_01180398 .array/port v011802E8, v011804A0_0;
+L_011805A8 .functor MUXZ 32, L_01180398, C4<00000000000000000000000000000000>, L_01180550, C4<>;
+L_011803F0 .cmp/eq 5, v01180448_0, C4<00000>;
+L_011B5FD8 .array/port v011802E8, v01180448_0;
+L_011B5C68 .functor MUXZ 32, L_011B5FD8, C4<00000000000000000000000000000000>, L_011803F0, C4<>;
+    .scope S_0118A550;
+T_0 ;
+    %set/v v01180658_0, 0, 32;
+T_0.0 ;
+    %load/v 8, v01180658_0, 32;
+   %cmpi/s 8, 32, 32;
+    %jmp/0xz T_0.1, 5;
+    %ix/getv/s 3, v01180658_0;
+   %jmp/1 t_0, 4;
+   %ix/load 1, 0, 0;
+   %set/av v011802E8, 0, 32;
+t_0 ;
+    %ix/load 0, 1, 0;
+    %load/vp0/s 8, v01180658_0, 32;
+    %set/v v01180658_0, 8, 32;
+    %jmp T_0.0;
+T_0.1 ;
+    %end;
+    .thread T_0;
+    .scope S_0118A550;
+T_1 ;
+    %wait E_01148870;
+    %load/v 8, v01180810_0, 1;
+    %load/v 9, v01180290_0, 5;
+    %cmpi/u 9, 0, 5;
+    %inv 4, 1;
+    %mov 9, 4, 1;
+    %and 8, 9, 1;
+    %jmp/0xz  T_1.0, 8;
+    %load/v 8, v01180708_0, 32;
+    %ix/getv 3, v01180290_0;
+    %jmp/1 t_1, 4;
+    %ix/load 0, 32, 0; word width
+    %ix/load 1, 0, 0; part off
+    %assign/av v011802E8, 0, 8;
+t_1 ;
+T_1.0 ;
+    %jmp T_1;
+    .thread T_1;
+    .scope S_0118ABB0;
+T_2 ;
+    %set/v v011800D8_0, 0, 1;
+    %end;
+    .thread T_2;
+    .scope S_0118ABB0;
+T_3 ;
+    %delay 5000, 0;
+    %load/v 8, v011800D8_0, 1;
+    %inv 8, 1;
+    %set/v v011800D8_0, 8, 1;
+    %jmp T_3;
+    .thread T_3;
+    .scope S_0118ABB0;
+T_4 ;
+    %vpi_call 2 23 "$dumpfile", "../waveform/tb_regFile.vcd";
+    %vpi_call 2 24 "$dumpvars", 1'sb0, S_0118ABB0;
+    %vpi_call 2 26 "$monitor", "rd1: %0d | rd2: %0d", v011801E0_0, v01180188_0;
+    %set/v v011804F8_0, 0, 1;
+    %set/v v011804A0_0, 0, 5;
+    %set/v v01180448_0, 0, 5;
+    %set/v v01180130_0, 0, 5;
+    %set/v v01180238_0, 0, 32;
+    %set/v v011804F8_0, 1, 1;
+    %movi 8, 1, 5;
+    %set/v v01180130_0, 8, 5;
+    %movi 8, 10, 32;
+    %set/v v01180238_0, 8, 32;
+    %delay 10000, 0;
+    %movi 8, 2, 5;
+    %set/v v01180130_0, 8, 5;
+    %movi 8, 20, 32;
+    %set/v v01180238_0, 8, 32;
+    %delay 10000, 0;
+    %set/v v01180130_0, 0, 5;
+    %movi 8, 99, 32;
+    %set/v v01180238_0, 8, 32;
+    %delay 10000, 0;
+    %set/v v011804F8_0, 0, 1;
+    %movi 8, 1, 5;
+    %set/v v011804A0_0, 8, 5;
+    %movi 8, 2, 5;
+    %set/v v01180448_0, 8, 5;
+    %delay 10000, 0;
+    %set/v v011804A0_0, 0, 5;
+    %set/v v01180448_0, 0, 5;
+    %delay 10000, 0;
+    %vpi_call 2 35 "$stop";
+    %end;
+    .thread T_4;
+# The file index is used to find the file name in the following table.
+:file_names 4;
+    "N/A";
+    "<interactive>";
+    "tb_regFile.v";
+    "regFile.v";

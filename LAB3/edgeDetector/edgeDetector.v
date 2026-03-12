@@ -17,4 +17,4 @@ always @(posedge clk or posedge rst)
     assign rise_pulse = sig & ~sig_prev;
     assign fall_pulse = ~sig & sig_prev;
 
-    endmodule
+endmodule

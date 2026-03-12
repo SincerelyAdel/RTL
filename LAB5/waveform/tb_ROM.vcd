@@ -1,0 +1,52 @@
+$date
+	Thu Mar 12 11:59:17 2026
+$end
+$version
+	Icarus Verilog
+$end
+$timescale
+	1ps
+$end
+$scope module tb_ROM $end
+$var wire 32 ! instr [31:0] $end
+$var wire 32 " word_addr [31:0] $end
+$var reg 32 # addr [31:0] $end
+$scope module uut $end
+$var wire 32 $ addr [31:0] $end
+$var wire 32 % instr [31:0] $end
+$upscope $end
+$upscope $end
+$enddefinitions $end
+#0
+$dumpvars
+b1000001000000110110011 %
+b0 $
+b0 #
+b0 "
+b1000001000000110110011 !
+$end
+#10000
+b1 "
+b1000000000100011000001000110011 !
+b1000000000100011000001000110011 %
+b100 #
+b100 $
+#20000
+b10 "
+b10000011111001010110011 !
+b10000011111001010110011 %
+b1000 #
+b1000 $
+#30000
+b11 "
+b100101110001100110011 !
+b100101110001100110011 %
+b1100 #
+b1100 $
+#40000
+b100 "
+b1000110100001110110011 !
+b1000110100001110110011 %
+b10000 #
+b10000 $
+#50000

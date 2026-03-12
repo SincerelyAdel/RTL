@@ -1,0 +1,87 @@
+#! /c/iverilog/bin/vvp
+:ivl_version "0.9.7 " "(v0_9_7)";
+:vpi_time_precision - 12;
+:vpi_module "system";
+:vpi_module "v2005_math";
+:vpi_module "va_math";
+S_01149C48 .scope module, "tb_pc" "tb_pc" 2 1;
+ .timescale -9 -12;
+v0114D1A0_0 .var "branch", 0 0;
+v0114D1F8_0 .var "branch_target", 31 0;
+v0114D250_0 .var "clk", 0 0;
+v0114BDA8_0 .net "pc", 31 0, v0130B948_0; 1 drivers
+v0114BE00_0 .var "rst", 0 0;
+S_01149DE0 .scope module, "uut" "pc" 2 7, 3 1, S_01149C48;
+ .timescale 0 0;
+v01150C58_0 .net "branch", 0 0, v0114D1A0_0; 1 drivers
+v01150CB0_0 .net "branch_target", 31 0, v0114D1F8_0; 1 drivers
+v0130B8F0_0 .net "clk", 0 0, v0114D250_0; 1 drivers
+v0130B948_0 .var "pc", 31 0;
+v0130B9A0_0 .net "rst", 0 0, v0114BE00_0; 1 drivers
+E_0114F158 .event posedge, v0130B8F0_0;
+    .scope S_01149DE0;
+T_0 ;
+    %wait E_0114F158;
+    %load/v 8, v0130B9A0_0, 1;
+    %jmp/0xz  T_0.0, 8;
+    %ix/load 0, 32, 0;
+    %assign/v0 v0130B948_0, 0, 0;
+    %jmp T_0.1;
+T_0.0 ;
+    %load/v 8, v01150C58_0, 1;
+    %jmp/0xz  T_0.2, 8;
+    %load/v 8, v01150CB0_0, 32;
+    %ix/load 0, 32, 0;
+    %assign/v0 v0130B948_0, 0, 8;
+    %jmp T_0.3;
+T_0.2 ;
+    %ix/load 0, 4, 0;
+    %load/vp0 8, v0130B948_0, 32;
+    %ix/load 0, 32, 0;
+    %assign/v0 v0130B948_0, 0, 8;
+T_0.3 ;
+T_0.1 ;
+    %jmp T_0;
+    .thread T_0;
+    .scope S_01149C48;
+T_1 ;
+    %set/v v0114D250_0, 0, 1;
+    %end;
+    .thread T_1;
+    .scope S_01149C48;
+T_2 ;
+    %delay 5000, 0;
+    %load/v 8, v0114D250_0, 1;
+    %inv 8, 1;
+    %set/v v0114D250_0, 8, 1;
+    %jmp T_2;
+    .thread T_2;
+    .scope S_01149C48;
+T_3 ;
+    %vpi_call 2 19 "$dumpfile", "../waveform/tb_pc.vcd";
+    %vpi_call 2 20 "$dumpvars", 1'sb0, S_01149C48;
+    %vpi_call 2 21 "$monitor", "pc: %0d", v0114BDA8_0;
+    %set/v v0114BE00_0, 1, 1;
+    %set/v v0114D1A0_0, 0, 1;
+    %set/v v0114D1F8_0, 0, 32;
+    %delay 10000, 0;
+    %set/v v0114BE00_0, 0, 1;
+    %delay 10000, 0;
+    %delay 10000, 0;
+    %delay 10000, 0;
+    %set/v v0114D1A0_0, 1, 1;
+    %movi 8, 32, 32;
+    %set/v v0114D1F8_0, 8, 32;
+    %delay 10000, 0;
+    %set/v v0114D1A0_0, 0, 1;
+    %delay 10000, 0;
+    %delay 10000, 0;
+    %vpi_call 2 33 "$stop";
+    %end;
+    .thread T_3;
+# The file index is used to find the file name in the following table.
+:file_names 4;
+    "N/A";
+    "<interactive>";
+    "tb_pc.v";
+    "pc.v";

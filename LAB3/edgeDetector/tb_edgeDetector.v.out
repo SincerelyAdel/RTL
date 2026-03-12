@@ -1,0 +1,85 @@
+#! /c/iverilog/bin/vvp
+:ivl_version "0.9.7 " "(v0_9_7)";
+:vpi_time_precision + 0;
+:vpi_module "system";
+:vpi_module "v2005_math";
+:vpi_module "va_math";
+S_01217830 .scope module, "tb_edge_detector" "tb_edge_detector" 2 2;
+ .timescale 0 0;
+v01218E90_0 .var "clk", 0 0;
+v01218EE8_0 .net "fall_pulse", 0 0, L_01253460; 1 drivers
+v01218F40_0 .net "rise_pulse", 0 0, L_01253658; 1 drivers
+v01218F98_0 .var "rst", 0 0;
+v01218FF0_0 .var "sig", 0 0;
+E_01218AD0 .event posedge, v01213848_0;
+S_01217C70 .scope module, "uut" "edge_detector" 2 7, 3 1, S_01217830;
+ .timescale 0 0;
+L_012534D0 .functor NOT 1, v01218E38_0, C4<0>, C4<0>, C4<0>;
+L_01253658 .functor AND 1, v01218FF0_0, L_012534D0, C4<1>, C4<1>;
+L_012536C8 .functor NOT 1, v01218FF0_0, C4<0>, C4<0>, C4<0>;
+L_01253460 .functor AND 1, L_012536C8, v01218E38_0, C4<1>, C4<1>;
+v01217070_0 .net *"_s0", 0 0, L_012534D0; 1 drivers
+v012137F0_0 .net *"_s4", 0 0, L_012536C8; 1 drivers
+v01213848_0 .net "clk", 0 0, v01218E90_0; 1 drivers
+v012138A0_0 .alias "fall_pulse", 0 0, v01218EE8_0;
+v01212B70_0 .alias "rise_pulse", 0 0, v01218F40_0;
+v01212BC8_0 .net "rst", 0 0, v01218F98_0; 1 drivers
+v01212C20_0 .net "sig", 0 0, v01218FF0_0; 1 drivers
+v01218E38_0 .var "sig_prev", 0 0;
+E_01218530 .event posedge, v01212BC8_0, v01213848_0;
+    .scope S_01217C70;
+T_0 ;
+    %wait E_01218530;
+    %load/v 8, v01212BC8_0, 1;
+    %jmp/0xz  T_0.0, 8;
+    %ix/load 0, 1, 0;
+    %assign/v0 v01218E38_0, 0, 0;
+    %jmp T_0.1;
+T_0.0 ;
+    %load/v 8, v01212C20_0, 1;
+    %ix/load 0, 1, 0;
+    %assign/v0 v01218E38_0, 0, 8;
+T_0.1 ;
+    %jmp T_0;
+    .thread T_0;
+    .scope S_01217830;
+T_1 ;
+    %delay 5, 0;
+    %load/v 8, v01218E90_0, 1;
+    %inv 8, 1;
+    %set/v v01218E90_0, 8, 1;
+    %jmp T_1;
+    .thread T_1;
+    .scope S_01217830;
+T_2 ;
+    %wait E_01218AD0;
+    %vpi_call 2 22 "$display", "sig=%b | rise_pulse=%b | fall_pulse=%b", v01218FF0_0, v01218F40_0, v01218EE8_0;
+    %jmp T_2;
+    .thread T_2;
+    .scope S_01217830;
+T_3 ;
+    %vpi_call 2 26 "$dumpfile", "tb_edge_detector.vcd";
+    %vpi_call 2 27 "$dumpvars", 1'sb0, S_01217830;
+    %set/v v01218E90_0, 0, 1;
+    %set/v v01218F98_0, 1, 1;
+    %set/v v01218FF0_0, 0, 1;
+    %delay 12, 0;
+    %set/v v01218F98_0, 0, 1;
+    %delay 10, 0;
+    %set/v v01218FF0_0, 1, 1;
+    %delay 20, 0;
+    %set/v v01218FF0_0, 0, 1;
+    %delay 20, 0;
+    %set/v v01218FF0_0, 1, 1;
+    %delay 10, 0;
+    %set/v v01218FF0_0, 0, 1;
+    %delay 20, 0;
+    %vpi_call 2 35 "$finish";
+    %end;
+    .thread T_3;
+# The file index is used to find the file name in the following table.
+:file_names 4;
+    "N/A";
+    "<interactive>";
+    "tb_edgeDetector.v";
+    "./edgeDetector.v";
